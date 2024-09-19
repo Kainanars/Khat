@@ -83,7 +83,9 @@
         stompClient.subscribe('/topic/public', (message) => {
             let data = JSON.parse(message.body)
             let messageDTO = data.body;
-            showMessage(messageDTO);
+            if (messageDTO.chatId === chatId){
+                showMessage(messageDTO);
+            }
         });
     };
 
@@ -95,8 +97,6 @@
 
         // Descriptografar a mensagem
         let decryptedMessage = decryptMessage(message.message);
-
-
 
         newMessage.innerHTML = `
         <div class="message-info">
