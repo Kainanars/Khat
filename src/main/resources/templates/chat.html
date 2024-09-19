@@ -74,7 +74,7 @@
     const chatId = document.querySelector('.chatId').id;
     const userId = document.querySelector('.userId').id;
     const stompClient = new StompJs.Client({
-        brokerURL: 'ws://khat-eqnd.onrender.com/chat'
+        brokerURL: 'wss://khat-eqnd.onrender.com/chat'
     });
 
     stompClient.onConnect = (frame) => {
