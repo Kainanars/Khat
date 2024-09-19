@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:HH="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/register.css" rel="stylesheet">
+</head>
+<body>
+<div class="register-container">
+    <h2 class="register-title">Registro</h2>
+    <div id="error" class="alert alert-danger" style="display: none;"></div>
+    <form id="registerForm">
+        <div class="form-group">
+            <label for="name">Nome:</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Senha:</label>
+            <div class="password-input-wrapper">
+                <input type="password" class="form-control" id="password" name="password" required>
+                <button type="button" class="password-toggle" id="passwordToggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                        <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                        <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Registrar</button>
+    </form>
+    <div class="login-link">
+        <p>Já tem uma conta? <a href="/login" class="text-primary">Faça login</a></p>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    document.getElementById('registerForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        fetch('/api/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name, email, password })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === "Usuário cadastrado com sucesso") {
+                    window.location.href = '/login';
+                } else {
+                    const errorElement = document.getElementById('error');
+                    errorElement.textContent = data.message || 'Ocorreu um erro durante o registro.';
+                    errorElement.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                const errorElement = document.getElementById('error');
+                errorElement.textContent = error.message || 'Ocorreu um erro ao tentar se registrar. Por favor, tente novamente.';
+                errorElement.style.display = 'block';
+            });
+    });
+
+    document.getElementById('passwordToggle').addEventListener('click', function() {
+        const passwordInput = document.getElementById('password');
+        const icon = this.querySelector('svg');
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.innerHTML = `
+                    <path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7 7 0 0 0 2.79-.588M5.21 3.088A7 7 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474z"/>
+                    <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12z"/>
+                `;
+        } else {
+            passwordInput.type = 'password';
+            icon.innerHTML = `
+                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                    <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                `;
+        }
+    });
+</script>
+</body>
+</html>

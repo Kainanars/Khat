@@ -1,0 +1,77 @@
+body {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+    font-family: Arial, sans-serif;
+}
+.card {
+    background-color: #333333;
+    border: none;
+    margin-bottom: 20px;
+    transition: transform 0.3s ease;
+}
+.card:hover {
+    transform: translateY(-5px);
+}
+.card-body {
+    padding: 1.15rem;
+}
+.card-title {
+    font-weight: bold;
+}
+.btn {
+    background-color: #a30000;
+    border-color: #a30000;
+    color: #e0e0e0;
+}
+.btn:hover, .btn-primary:focus {
+    background-color: #8a0000;
+    border-color: #8a0000;
+    color: #e0e0e0;
+}
+
+.form-control {
+    background-color: #333333;
+    border-color: #4d4d4d;
+    color: #e0e0e0;
+}
+.form-control:focus {
+    background-color: #404040;
+    border-color: #a30000;
+    color: #ffffff;
+    box-shadow: 0 0 0 0.2rem rgba(163, 0, 0, 0.25);
+}
+.page-title {
+    color: #a30000;
+    margin-bottom: 30px;
+}
+.card-body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+.container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+.row{
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+}
+.form-group{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: nowrap;
+    margin: 5px;
+    align-items: center;
+}
+form{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 5%;
+}

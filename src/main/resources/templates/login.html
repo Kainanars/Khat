@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:HH="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/login.css?v=1" rel="stylesheet">
+</head>
+<body>
+<div class="login-container">
+    <h2 class="login-title">Login</h2>
+    <div id="error" class="alert alert-danger" style="display: none;">
+        Email ou senha inválidos.
+    </div>
+    <div id="logout" class="alert alert-success" style="display: none;">
+        Você foi desconectado com sucesso.
+    </div>
+
+    <form id="loginForm">
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Senha:</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Entrar</button>
+    </form>
+
+    <div class="register-link">
+        <p>Não tem uma conta? <a href="/register" class="text-primary">Registrar</a></p>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === "Login efetuado com sucesso") {
+                    window.location.href = '/chats';
+                } else {
+                    document.getElementById('error').style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('error').textContent = error.message || 'Ocorreu um erro ao tentar fazer login. Por favor, tente novamente.';
+            });
+    });
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('logout') === 'true') {
+        document.getElementById('logout').style.display = 'block';
+    }
+</script>
+</body>
+</html>

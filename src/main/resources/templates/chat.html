@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/chat.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@5.0.0/bundles/stomp.umd.min.js"></script>
+
+    <script>
+        function decryptMessage(encryptedMessage, secretKey) {
+            const bytes = CryptoJS.AES.decrypt(encryptedMessage, secretKey);
+            return bytes.toString(CryptoJS.enc.Utf8);
+        }
+        const secretKeyPassed = `/*[[${secretKey}]]*/`;
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const messageContainers = document.querySelectorAll('.message-content');
+            messageContainers.forEach(function(container) {
+                const encryptedMessage = container.getAttribute('data-encrypted-message');
+                container.textContent = decryptMessage(encryptedMessage, secretKeyPassed);
+            });
+            scrollToBottom();
+        });
+
+        function scrollToBottom() {
+            const chatMessages = document.getElementById("chatMessages");
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    </script>
+</head>
+<body>
+<div th:unless="${param.error}" class="chat-container">
+    <div class="chat-header">
+        <div class="userId" th:id="${userInfo}"></div>
+        <a href="/chats" class="back-button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-arrow-left-square" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm11.5 5.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
+            </svg>
+        </a>
+        <div class="chat-title">
+            <h2 class="chatId" th:id="${chat.id}" th:text="${chat.name}"></h2>
+        </div>
+    </div>
+    <div id="chatMessages" class="chat-messages">
+        <div th:id="${message.id}" class="message-container" th:each="message : ${messages}">
+            <div th:class="'message ' + (${message.userId == userInfo} ? 'message-sent' : 'message-received')">
+                <div class="message-info">
+                    <b class="message-user" th:text="${message.user}"></b>
+                    <div class="message-context">
+                            <div class="message-content" th:attr="data-encrypted-message=${message.message}">
+                            </div>
+                        <div class="message-hour">
+                            <span th:text="${#temporals.format(message.data, 'HH:mm')}" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <form id="messageForm" class="chat-input">
+        <input type="text" id="messageInput" placeholder="Type a message" required>
+        <button type="submit">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16" style="transform: rotate(45deg);">
+                <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576zm6.787-8.201L1.591 6.602l4.339 2.76z"/>
+            </svg>
+        </button>
+    </form>
+</div>
+<script>
+    const chatId = document.querySelector('.chatId').id;
+    const userId = document.querySelector('.userId').id;
+    const stompClient = new StompJs.Client({
+        brokerURL: 'ws://localhost:8080/chat'
+    });
+
+    stompClient.onConnect = (frame) => {
+        stompClient.subscribe('/topic/public', (message) => {
+            let data = JSON.parse(message.body)
+            let messageDTO = data.body;
+            showMessage(messageDTO);
+        });
+    };
+
+    function showMessage(message) {
+        let messageList = document.getElementById("chatMessages");
+        let newMessage = document.createElement("div");
+        newMessage.classList.add('message');
+        newMessage.className = message.userId === userId ? 'message message-sent' : 'message message-received';
+
+        // Descriptografar a mensagem
+        let decryptedMessage = decryptMessage(message.message);
+
+
+
+        newMessage.innerHTML = `
+        <div class="message-info">
+            <b class="message-user">${message.user}</b>
+            <div class="message-context">
+                <div class="message-content">
+                    ${decryptedMessage}
+                </div>
+                <div class="message-hour">
+                    <span>${new Date(message.data).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</span>
+                </div>
+            </div>
+        </div>
+    `;
+        messageList.appendChild(newMessage);
+        scrollToBottom();
+    }
+
+    function decryptMessage(encryptedMessage) {
+        const bytes = CryptoJS.AES.decrypt(encryptedMessage, secretKeyPassed);
+        return bytes.toString(CryptoJS.enc.Utf8);
+    }
+
+
+    document.querySelector('#messageForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const message = document.querySelector('#messageInput').value;
+        const messageEncrypted = encryptMessage(message);
+
+
+        stompClient.publish(
+            {
+            destination: `/api/chat/send`,
+            body: JSON.stringify({
+                chatId: chatId,
+                message: messageEncrypted,
+                userId: userId
+            })
+            }
+        );
+        document.querySelector('#messageInput').value = '';
+    });
+
+    function encryptMessage(message) {
+        return CryptoJS.AES.encrypt(message, secretKeyPassed).toString();
+    }
+
+    stompClient.activate();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
