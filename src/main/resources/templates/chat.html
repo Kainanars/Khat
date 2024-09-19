@@ -83,7 +83,6 @@
         stompClient.subscribe('/topic/public', (message) => {
             let data = JSON.parse(message.body)
             let messageDTO = data.body;
-            console.log(messageDTO)
             if (messageDTO.chatId == chatId){
                 showMessage(messageDTO);
             }
