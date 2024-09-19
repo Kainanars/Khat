@@ -33,13 +33,14 @@ public class MessageService {
         chat.get().getMessages().add(message);
         chatRepository.save(chat.get());
 
-        return getMessageDTO(message, user);
+        return getMessageDTO(chat.get().getId(), message, user);
     }
 
 
-    private static MessageDTO getMessageDTO(Message message, User user) {
+    private static MessageDTO getMessageDTO(String chatId, Message message, User user) {
         MessageDTO messageDTO = new MessageDTO();
         messageDTO.setId(message.getId());
+        messageDTO.setChatId(chatId);
         messageDTO.setMessage(message.getMessage());
         messageDTO.setUser(user.getName());
         messageDTO.setUserId(user.getId());
