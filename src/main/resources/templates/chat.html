@@ -54,7 +54,7 @@
                             <div class="message-content" th:attr="data-encrypted-message=${message.message}">
                             </div>
                         <div class="message-hour">
-                            <span th:text="${#temporals.format(message.data, 'HH:mm')}" />
+                            <span th:text="${#temporals.format(message.data, 'HH:mm', 'UTC-3')}" />
                         </div>
                     </div>
                 </div>
@@ -106,7 +106,7 @@
                     ${decryptedMessage}
                 </div>
                 <div class="message-hour">
-                    <span>${new Date(message.data).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</span>
+                    <span>${new Date(message.data).toLocaleTimeString('pt-BR', {timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit'})}</span>
                 </div>
             </div>
         </div>
