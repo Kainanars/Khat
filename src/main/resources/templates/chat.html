@@ -73,11 +73,21 @@
 <script>
     const chatId = document.querySelector('.chatId').id;
     const userId = document.querySelector('.userId').id;
+
+    function getWebSocketUrl() {
+        const hostname = window.location.hostname;
+        if (hostname === 'localhost') {
+            return 'ws://localhost:8080/chat';
+        } else {
+            return 'wss://kainanrodrigues.tech/chat';
+        }
+    }
     const stompClient = new StompJs.Client({
-        brokerURL: 'ws://khat-eqnd.onrender.com/chat'
+        brokerURL: getWebSocketUrl()
     });
 
     stompClient.onConnect = (frame) => {
+        console.log("Conectado ao chat");
         stompClient.subscribe('/topic/public', (message) => {
             let data = JSON.parse(message.body)
             let messageDTO = data.body;
