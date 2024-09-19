@@ -16,6 +16,7 @@
             return bytes.toString(CryptoJS.enc.Utf8);
         }
         const secretKeyPassed = `/*[[${secretKey}]]*/`;
+        const socket = `/*[[${socketUrl}]]*/`;
 
         document.addEventListener("DOMContentLoaded", function() {
             const messageContainers = document.querySelectorAll('.message-content');
@@ -74,16 +75,8 @@
     const chatId = document.querySelector('.chatId').id;
     const userId = document.querySelector('.userId').id;
 
-    function getWebSocketUrl() {
-        const hostname = window.location.hostname;
-        if (hostname === 'localhost') {
-            return 'ws://localhost:8080/chat';
-        } else {
-            return 'wss://kainanrodrigues.tech/chat';
-        }
-    }
     const stompClient = new StompJs.Client({
-        brokerURL: getWebSocketUrl()
+        brokerURL: socket
     });
 
     stompClient.onConnect = (frame) => {
