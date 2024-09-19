@@ -10,13 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.Cipher;
-import javax.crypto.Mac;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 import java.util.Optional;
 
 @Service
@@ -27,9 +20,6 @@ public class MessageService {
 
     @Autowired
     private ChatRepository chatRepository;
-
-    @Value("${jwt.secret}")
-    private String secretKey;
 
     public MessageDTO sendMessage(String chatId, String content, User user) {
         Message message = new Message(content, user.getId());

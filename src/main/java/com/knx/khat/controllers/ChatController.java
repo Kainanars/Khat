@@ -22,8 +22,6 @@ public class ChatController {
 
     @Autowired
     private ChatService chatService;
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @GetMapping("/chats")
     public String listChats(Model model) {

@@ -21,10 +21,7 @@ public class SecurityConfig {
 
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
-
-    @Autowired
-    private UserDetailsServiceImpl customUserDetailsService;
-
+    
     @Autowired
     private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
@@ -60,9 +57,9 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("*"); // Permitir todas as origens, ou especificar origens permitidas
-        config.addAllowedHeader("*"); // Permitir todos os cabeçalhos, ou especificar cabeçalhos permitidos
-        config.addAllowedMethod("*"); // Permitir todos os métodos, ou especificar métodos permitidos
+        config.addAllowedOrigin("*");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
