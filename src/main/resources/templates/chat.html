@@ -16,7 +16,6 @@
             return bytes.toString(CryptoJS.enc.Utf8);
         }
         const secretKeyPassed = `/*[[${secretKey}]]*/`;
-        const socket = `/*[[${socketUrl}]]*/`;
 
         document.addEventListener("DOMContentLoaded", function() {
             const messageContainers = document.querySelectorAll('.message-content');
@@ -76,7 +75,7 @@
     const userId = document.querySelector('.userId').id;
 
     const stompClient = new StompJs.Client({
-        brokerURL: socket
+        brokerURL: "/chat"
     });
 
     stompClient.onConnect = (frame) => {

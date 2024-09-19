@@ -30,9 +30,6 @@ public class MessageController {
     @Value("${app.secretKey}")
     private String secretKey;
 
-    @Value("${socket.url}")
-    private String socketUrl;
-
     public MessageController(MessageService messageService, ChatService chatService, UserService userService) {
         this.messageService = messageService;
         this.chatService = chatService;
@@ -61,7 +58,6 @@ public class MessageController {
         model.addAttribute("messages", chatDTO.getMessages());
         model.addAttribute("userInfo", user.getId());
         model.addAttribute("secretKey", secretKey);
-        model.addAttribute("socketUrl", socketUrl);
         return "chat";
     }
 
